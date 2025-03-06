@@ -1,18 +1,19 @@
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Map, Clock, BarChart, Settings, Users } from 'lucide-react';
+import { MapPin, BarChart, Clock, User, Home } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const BottomNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const navItems = [
-    { icon: <Map size={20} />, label: 'Dashboard', path: '/' },
+    { icon: <Home size={20} />, label: 'Home', path: '/' },
+    { icon: <Clock size={20} />, label: 'Dashboard', path: '/dashboard' },
     { icon: <BarChart size={20} />, label: 'Reports', path: '/reports' },
-    { icon: <Clock size={20} />, label: 'Geo-Fencing', path: '/geofencing' },
-    { icon: <Users size={20} />, label: 'Users', path: '/users' },
-    { icon: <Settings size={20} />, label: 'Settings', path: '/settings' }
+    { icon: <MapPin size={20} />, label: 'Geo-Fencing', path: '/geofencing' },
+    { icon: <User size={20} />, label: 'Profile', path: '/manual-entry' }
   ];
 
   return (
@@ -29,12 +30,16 @@ const BottomNavigation = () => {
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
-              className="flex flex-col items-center justify-center py-1 px-3 rounded-lg transition-colors relative"
+              className={cn(
+                "flex flex-col items-center justify-center py-1 px-3 rounded-lg transition-colors relative",
+                isActive ? "text-primary" : "text-muted-foreground"
+              )}
             >
-              <div className={`mb-1 ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
-                {item.icon}
-              </div>
-              <span className={`text-xs ${isActive ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+              <div className="mb-1">{item.icon}</div>
+              <span className={cn(
+                "text-xs", 
+                isActive ? "text-primary font-medium" : "text-muted-foreground"
+              )}>
                 {item.label}
               </span>
               {isActive && (

@@ -5,7 +5,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Loader2 } from 'lucide-react';
 
 // Note: In production, this should be securely managed
-mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN';
+// This is just a placeholder token - you'll need to replace it with your own
+mapboxgl.accessToken = 'pk.eyJ1IjoiZXhhbXBsZXVzZXIiLCJhIjoiY2xleWx5cG9vMDB3NjN4bnN3bjU2d2RoYyJ9.ykDI6A6h6UdHbn-xw1-gLQ';
 
 interface MapViewProps {
   center?: [number, number];
@@ -164,13 +165,16 @@ const MapView = ({
   }, [center, zoom]);
 
   return (
-    <div className={`relative rounded-xl overflow-hidden ${className}`}>
-      <div ref={mapContainer} className="w-full h-full" />
+    <div className="relative rounded-xl overflow-hidden h-full w-full">
+      <div ref={mapContainer} className={`w-full h-full ${className}`} />
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       )}
+      <div className="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm rounded px-2 py-1 text-xs text-muted-foreground">
+        Note: Add your Mapbox token for maps to display
+      </div>
     </div>
   );
 };

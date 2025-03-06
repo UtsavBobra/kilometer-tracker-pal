@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Reports from "./pages/Reports";
 import GeoFencing from "./pages/GeoFencing";
 import ManualEntry from "./pages/ManualEntry";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/reports" element={<Reports />} />
           <Route path="/geofencing" element={<GeoFencing />} />
           <Route path="/manual-entry" element={<ManualEntry />} />
+          <Route path="/profile" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
