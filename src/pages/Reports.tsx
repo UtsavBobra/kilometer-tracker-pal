@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Calendar, ListFilter, Users, User, BarChart, MapPin, Download, Clock, ArrowUpDown, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -15,16 +14,17 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import BottomNavigation from '@/components/layout/BottomNavigation';
 import ReportLocationHistory from '@/components/reports/ReportLocationHistory';
+import { Location } from '@/types';
 
-// Mocked location data
+// Mocked location data - updated to include timestamp
 const geoFencingLocations = [
-  { id: '1', name: 'New York Office', latitude: 40.7128, longitude: -74.0060 },
-  { id: '2', name: 'Brooklyn HQ', latitude: 40.6782, longitude: -73.9442 },
-  { id: '3', name: 'Queens Site', latitude: 40.7282, longitude: -73.7949 },
-  { id: '4', name: 'Manhattan Site', latitude: 40.7831, longitude: -73.9712 },
-  { id: '5', name: 'Jersey City Site', latitude: 40.7178, longitude: -74.0431 },
-  { id: '6', name: 'Newark Office', latitude: 40.7357, longitude: -74.1724 },
-  { id: '7', name: 'Long Island Office', latitude: 40.7891, longitude: -73.1350 },
+  { id: '1', name: 'New York Office', latitude: 40.7128, longitude: -74.0060, timestamp: '2023-06-20T09:00:00Z' },
+  { id: '2', name: 'Brooklyn HQ', latitude: 40.6782, longitude: -73.9442, timestamp: '2023-06-20T10:30:00Z' },
+  { id: '3', name: 'Queens Site', latitude: 40.7282, longitude: -73.7949, timestamp: '2023-06-20T12:15:00Z' },
+  { id: '4', name: 'Manhattan Site', latitude: 40.7831, longitude: -73.9712, timestamp: '2023-06-20T14:00:00Z' },
+  { id: '5', name: 'Jersey City Site', latitude: 40.7178, longitude: -74.0431, timestamp: '2023-06-20T15:30:00Z' },
+  { id: '6', name: 'Newark Office', latitude: 40.7357, longitude: -74.1724, timestamp: '2023-06-20T16:45:00Z' },
+  { id: '7', name: 'Long Island Office', latitude: 40.7891, longitude: -73.1350, timestamp: '2023-06-20T18:00:00Z' },
 ];
 
 const reportsData = [
@@ -105,6 +105,17 @@ const Reports = () => {
   const getLocationName = (locationId: string) => {
     const location = geoFencingLocations.find(loc => loc.id === locationId);
     return location ? location.name : 'Unknown Location';
+  };
+
+  // Get location object by ID
+  const getLocationById = (locationId: string): Location => {
+    const location = geoFencingLocations.find(loc => loc.id === locationId);
+    return location || {
+      latitude: 0,
+      longitude: 0,
+      timestamp: new Date().toISOString(),
+      name: 'Unknown Location'
+    };
   };
 
   // Sort reports based on current sort order
@@ -276,10 +287,7 @@ const Reports = () => {
                       className="mt-4 pt-4 border-t"
                     >
                       <ReportLocationHistory 
-                        locations={report.locations.map(id => {
-                          const loc = geoFencingLocations.find(l => l.id === id);
-                          return loc || geoFencingLocations[0]; // Fallback to first location if not found
-                        })}
+                        locations={report.locations.map(id => getLocationById(id))}
                       />
                     </motion.div>
                   )}
