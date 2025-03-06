@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Calendar, ListFilter, Users, User, BarChart, MapPin, Download, Clock, ArrowUpDown, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -14,6 +15,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import BottomNavigation from '@/components/layout/BottomNavigation';
 import ReportLocationHistory from '@/components/reports/ReportLocationHistory';
+import UsersLocationReport from '@/components/reports/UsersLocationReport';
 import { Location } from '@/types';
 
 // Mocked location data - updated to include timestamp
@@ -71,7 +73,32 @@ const weeklyData = [
   { day: 'Sun', distance: 0, trips: 0 },
 ];
 
+// Create monthly summary data
+const monthlyData = [
+  { week: 'Week 1', distance: 172.4, trips: 14 },
+  { week: 'Week 2', distance: 185.7, trips: 16 },
+  { week: 'Week 3', distance: 145.2, trips: 12 },
+  { week: 'Week 4', distance: 98.6, trips: 8 }
+];
+
+// Create yearly summary data
+const yearlyData = [
+  { month: 'Jan', distance: 420.5 },
+  { month: 'Feb', distance: 380.2 },
+  { month: 'Mar', distance: 450.8 },
+  { month: 'Apr', distance: 510.3 },
+  { month: 'May', distance: 580.1 },
+  { month: 'Jun', distance: 602.4 },
+  { month: 'Jul', distance: 0 },
+  { month: 'Aug', distance: 0 },
+  { month: 'Sep', distance: 0 },
+  { month: 'Oct', distance: 0 },
+  { month: 'Nov', distance: 0 },
+  { month: 'Dec', distance: 0 }
+];
+
 const Reports = () => {
+  const [reportCategory, setReportCategory] = useState<'kilometer' | 'location'>('kilometer');
   const [reportType, setReportType] = useState('self');
   const [period, setPeriod] = useState('daily');
   const [loading, setLoading] = useState(true);
@@ -125,6 +152,127 @@ const Reports = () => {
       : b.distance - a.distance;
   });
 
+  // Get summary data based on period
+  const getSummaryData = () => {
+    switch (period) {
+      case 'weekly':
+        return weeklyData;
+      case 'monthly':
+        return monthlyData;
+      case 'yearly':
+        return yearlyData;
+      default:
+        return null;
+    }
+  };
+
+  // Render summary chart based on period
+  const renderSummaryChart = () => {
+    const data = getSummaryData();
+    
+    if (!data) return null;
+    
+    // For daily period, no chart is shown
+    if (period === 'daily') return null;
+    
+    // For weekly period, show bar chart
+    if (period === 'weekly') {
+      return (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="glass-card p-5 rounded-xl"
+        >
+          <h3 className="font-medium mb-4">Weekly Summary</h3>
+          <div className="h-48">
+            <div className="flex h-full items-end space-x-2">
+              {weeklyData.map((day) => (
+                <div key={day.day} className="flex flex-col items-center flex-1">
+                  <div className="w-full bg-gray-200 rounded-t-sm relative" 
+                    style={{ height: `${(day.distance / 50) * 100}%`, minHeight: '10px' }}>
+                    {day.distance > 0 && (
+                      <span className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-medium">
+                        {day.distance}km
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs mt-2 text-muted-foreground">{day.day}</div>
+                  <div className="text-xs font-medium">{day.trips} trips</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      );
+    }
+    
+    // For monthly period, show week summary
+    if (period === 'monthly') {
+      return (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="glass-card p-5 rounded-xl"
+        >
+          <h3 className="font-medium mb-4">Monthly Summary</h3>
+          <div className="h-48">
+            <div className="flex h-full items-end space-x-2">
+              {monthlyData.map((week) => (
+                <div key={week.week} className="flex flex-col items-center flex-1">
+                  <div className="w-full bg-gray-200 rounded-t-sm relative" 
+                    style={{ height: `${(week.distance / 200) * 100}%`, minHeight: '10px' }}>
+                    {week.distance > 0 && (
+                      <span className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-medium">
+                        {week.distance}km
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs mt-2 text-muted-foreground">{week.week}</div>
+                  <div className="text-xs font-medium">{week.trips} trips</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      );
+    }
+    
+    // For yearly period, show month summary
+    if (period === 'yearly') {
+      return (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="glass-card p-5 rounded-xl"
+        >
+          <h3 className="font-medium mb-4">Yearly Summary</h3>
+          <div className="h-48">
+            <div className="flex h-full items-end space-x-1">
+              {yearlyData.map((month) => (
+                <div key={month.month} className="flex flex-col items-center flex-1">
+                  <div className="w-full bg-gray-200 rounded-t-sm relative" 
+                    style={{ height: `${(month.distance / 700) * 100}%`, minHeight: '10px' }}>
+                    {month.distance > 0 && (
+                      <span className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-medium whitespace-nowrap">
+                        {month.distance}
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs mt-2 text-muted-foreground">{month.month}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      );
+    }
+    
+    return null;
+  };
+
   return (
     <div className="container max-w-3xl px-4 pt-4 pb-20">
       <div className="space-y-5 mb-16">
@@ -137,20 +285,38 @@ const Reports = () => {
           
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm text-muted-foreground">Report Type</label>
-              <Tabs defaultValue="self" value={reportType} onValueChange={setReportType} className="w-full">
+              <label className="text-sm text-muted-foreground">Report Category</label>
+              <Tabs defaultValue="kilometer" value={reportCategory} onValueChange={(value) => setReportCategory(value as 'kilometer' | 'location')} className="w-full">
                 <TabsList className="grid grid-cols-2 w-full">
-                  <TabsTrigger value="self">
-                    <User size={16} className="mr-2" />
-                    Self Report
+                  <TabsTrigger value="kilometer">
+                    <BarChart size={16} className="mr-2" />
+                    Kilometer Report
                   </TabsTrigger>
-                  <TabsTrigger value="all">
-                    <Users size={16} className="mr-2" />
-                    All Users
+                  <TabsTrigger value="location">
+                    <MapPin size={16} className="mr-2" />
+                    Location Report
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
+            
+            {reportCategory === 'kilometer' && (
+              <div className="space-y-2">
+                <label className="text-sm text-muted-foreground">Report Type</label>
+                <Tabs defaultValue="self" value={reportType} onValueChange={setReportType} className="w-full">
+                  <TabsList className="grid grid-cols-2 w-full">
+                    <TabsTrigger value="self">
+                      <User size={16} className="mr-2" />
+                      Self Report
+                    </TabsTrigger>
+                    <TabsTrigger value="all">
+                      <Users size={16} className="mr-2" />
+                      All Users
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+            )}
             
             <div className="space-y-2">
               <label className="text-sm text-muted-foreground">Time Period</label>
@@ -183,34 +349,8 @@ const Reports = () => {
           </div>
         </motion.div>
         
-        {period === 'weekly' && (
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="glass-card p-5 rounded-xl"
-          >
-            <h3 className="font-medium mb-4">Weekly Summary</h3>
-            <div className="h-48">
-              <div className="flex h-full items-end space-x-2">
-                {weeklyData.map((day) => (
-                  <div key={day.day} className="flex flex-col items-center flex-1">
-                    <div className="w-full bg-gray-200 rounded-t-sm relative" 
-                      style={{ height: `${(day.distance / 50) * 100}%`, minHeight: '10px' }}>
-                      {day.distance > 0 && (
-                        <span className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-medium">
-                          {day.distance}km
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-xs mt-2 text-muted-foreground">{day.day}</div>
-                    <div className="text-xs font-medium">{day.trips} trips</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
+        {/* Show summary chart based on period */}
+        {reportCategory === 'kilometer' && renderSummaryChart()}
         
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
@@ -220,16 +360,19 @@ const Reports = () => {
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-medium">Results</h3>
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm" className="h-8" onClick={handleSortChange}>
-                <ArrowUpDown size={14} className="mr-2" />
-                {sortOrder === 'desc' ? 'Highest First' : 'Lowest First'}
-              </Button>
-              <Button variant="outline" size="sm" className="h-8">
-                <ListFilter size={14} className="mr-2" />
-                Filter
-              </Button>
-            </div>
+            
+            {reportCategory === 'kilometer' && (
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="sm" className="h-8" onClick={handleSortChange}>
+                  <ArrowUpDown size={14} className="mr-2" />
+                  {sortOrder === 'desc' ? 'Highest First' : 'Lowest First'}
+                </Button>
+                <Button variant="outline" size="sm" className="h-8">
+                  <ListFilter size={14} className="mr-2" />
+                  Filter
+                </Button>
+              </div>
+            )}
           </div>
           
           {loading ? (
@@ -242,7 +385,7 @@ const Reports = () => {
                 </div>
               ))}
             </div>
-          ) : (
+          ) : reportCategory === 'kilometer' ? (
             <div className="space-y-4 max-h-96 overflow-y-auto pr-1">
               {sortedReports.map((report) => (
                 <motion.div 
@@ -294,6 +437,8 @@ const Reports = () => {
                 </motion.div>
               ))}
             </div>
+          ) : (
+            <UsersLocationReport loading={loading} />
           )}
         </motion.div>
       </div>
